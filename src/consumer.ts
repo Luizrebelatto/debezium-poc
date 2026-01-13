@@ -19,7 +19,7 @@ interface DebeziumPayload {
     schema: string;
     table: string;
   };
-  op: "c" | "u" | "d" | "r";
+  op: "create" | "update" | "delete" | "read";
   ts_ms: number;
 }
 
@@ -30,13 +30,13 @@ interface DebeziumMessage {
 
 function getOperationName(op: string): string {
   switch (op) {
-    case "c":
+    case "create":
       return "INSERT";
-    case "u":
+    case "update":
       return "UPDATE";
-    case "d":
+    case "delete":
       return "DELETE";
-    case "r":
+    case "read":
       return "SNAPSHOT";
     default:
       return "UNKNOWN";
@@ -54,31 +54,31 @@ async function processMessage({ topic, partition, message }: EachMessagePayload)
     const { payload } = data;
 
     console.log("\n" + "=".repeat(60));
-    console.log(`📌 Tópico: ${topic}`);
-    console.log(`📊 Partição: ${partition}`);
-    console.log(`🗄️  Tabela: ${payload.source.schema}.${payload.source.table}`);
-    console.log(`⚡ Operação: ${getOperationName(payload.op)}`);
-    console.log(`🕐 Timestamp: ${new Date(payload.ts_ms).toISOString()}`);
+    console.log(`Topic: ${topic}`);
+    console.log(`Partition: ${partition}`);
+    console.log(`Table: ${payload.source.schema}.${payload.source.table}`);
+    console.log(`Operation: ${getOperationName(payload.op)}`);
+    console.log(`Timestamp: ${new Date(payload.ts_ms).toISOString()}`);
 
     switch (payload.op) {
-      case "c":
-        console.log("➕ Novo registro criado:");
+      case "create":
+        console.log("Novo registro criado:");
         console.log(JSON.stringify(payload.after, null, 2));
         break;
 
-      case "u":
-        console.log("📝 Registro atualizado:");
+      case "update":
+        console.log("updated register:");
         console.log("  Antes:", JSON.stringify(payload.before, null, 2));
         console.log("  Depois:", JSON.stringify(payload.after, null, 2));
         break;
 
-      case "d":
-        console.log("🗑️  Registro removido:");
+      case "delete":
+        console.log("Register Removed:");
         console.log(JSON.stringify(payload.before, null, 2));
         break;
 
-      case "r":
-        console.log("📸 Snapshot inicial:");
+      case "read":
+        console.log("initial snapshot record:");
         console.log(JSON.stringify(payload.after, null, 2));
         break;
     }
@@ -91,26 +91,19 @@ async function processMessage({ topic, partition, message }: EachMessagePayload)
 }
 
 async function run() {
-  console.log("🚀 Iniciando consumer CDC...");
-
   await consumer.connect();
-  console.log("✅ Conectado ao Kafka");
+  console.log("Connected to kafka");
 
-  // Inscrever-se nos tópicos do Debezium (padrão: topic.prefix.schema.table)
   await consumer.subscribe({
     topics: [/^dbserver1\.public\..*/],
     fromBeginning: true,
   });
-
-  console.log("📡 Inscrito nos tópicos dbserver1.public.*");
-  console.log("👀 Aguardando eventos CDC...\n");
 
   await consumer.run({
     eachMessage: processMessage,
   });
 }
 
-// Tratamento de sinais para shutdown gracioso
 const shutdown = async () => {
   console.log("\n🛑 Encerrando consumer...");
   await consumer.disconnect();
