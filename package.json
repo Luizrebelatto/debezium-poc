@@ -4,10 +4,12 @@
   "type": "module",
   "scripts": {
     "start": "bun run src/consumer.ts",
-    "producer": "bun run src/test-producer.ts"
+    "producer": "bun run src/test-producer.ts",
+    "api": "bun run src/api.ts"
   },
   "dependencies": {
-    "kafkajs": "^2.2.4"
+    "kafkajs": "^2.2.4",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@types/bun": "latest"
