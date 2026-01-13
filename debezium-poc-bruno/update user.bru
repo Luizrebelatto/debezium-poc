@@ -1,0 +1,27 @@
+meta {
+  name: update user
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:3000/users/8
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "santos",
+    "email": "novo@email.com"
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
