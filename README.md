@@ -12,33 +12,19 @@ POC Change Data Capture (CDC) using Debezium, PostgreSQL, Kafka e Bun.
 
 ## How to run
 
-### 1. Start infra
+### Start infra
 
 ```bash
 docker-compose up -d
 ```
 
-### 2. Install dependencies
+### Install dependencies
 
 ```bash
 bun install
 ```
 
-### 3. Configurar o conector Debezium
-
-```bash
-./scripts/setup-connector.sh
-```
-
-Ou manualmente:
-
-```bash
-curl -X POST http://localhost:8083/connectors \
-  -H "Content-Type: application/json" \
-  -d @connector-config.json
-```
-
-### 4. Iniciar o consumer
+### Iniciar o consumer
 
 ```bash
 bun start
