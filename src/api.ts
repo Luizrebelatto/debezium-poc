@@ -93,21 +93,6 @@ const server = Bun.serve({
         return new Response(JSON.stringify({ deleted: result.rows[0] }), { headers });
       }
 
-      if (path === "/orders" && method === "GET") {
-        const orders = await query("SELECT * FROM orders ORDER BY id");
-        return new Response(JSON.stringify(orders), { headers });
-      }
-
-      if (path === "/orders" && method === "POST") {
-        const body = await req.json();
-        const { user_id, total, status = "pending" } = body;
-        const result = await execute(
-          "INSERT INTO orders (user_id, total, status) VALUES ($1, $2, $3) RETURNING *",
-          [user_id, total, status]
-        );
-        return new Response(JSON.stringify(result.rows[0]), { headers, status: 201 });
-      }
-
       return new Response(JSON.stringify({ error: "Not found" }), { headers, status: 404 });
 
     } catch (error: any) {

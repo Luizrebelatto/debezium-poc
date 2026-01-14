@@ -62,14 +62,12 @@ async function processMessage({ topic, partition, message }: EachMessagePayload)
 
     switch (payload.op) {
       case "create":
-        console.log("Novo registro criado:");
+        console.log("New Register:");
         console.log(JSON.stringify(payload.after, null, 2));
         break;
 
       case "update":
         console.log("updated register:");
-        console.log("  Antes:", JSON.stringify(payload.before, null, 2));
-        console.log("  Depois:", JSON.stringify(payload.after, null, 2));
         break;
 
       case "delete":
@@ -85,8 +83,7 @@ async function processMessage({ topic, partition, message }: EachMessagePayload)
 
     console.log("=".repeat(60));
   } catch (error) {
-    console.error("Erro ao processar mensagem:", error);
-    console.log("Mensagem raw:", message.value.toString());
+    console.error("Error to process", error);
   }
 }
 
@@ -105,9 +102,9 @@ async function run() {
 }
 
 const shutdown = async () => {
-  console.log("\n🛑 Encerrando consumer...");
+  console.log("\stop consumer...");
   await consumer.disconnect();
-  console.log("👋 Consumer desconectado");
+  console.log("👋 Consumer desconected");
   process.exit(0);
 };
 
